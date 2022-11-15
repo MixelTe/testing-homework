@@ -1,0 +1,2 @@
+npm i --save-dev @testing-library/react@12.1.2
+npm i --save-dev ts-jest
