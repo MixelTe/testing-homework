@@ -1,29 +1,28 @@
 import { it, describe, expect } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
+import { CartApi_Stub, ExampleApi_Stub } from './api_stub';
+
 
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-
 import { Application } from '../../src/client/Application';
 import { ExampleApi, CartApi } from '../../src/client/api';
 import { initStore } from '../../src/client/store';
 
 
-function Render()
+function Render(route = "/")
 {
-    const basename = '/hw/store';
-
-    const api = new ExampleApi(basename);
-    const cart = new CartApi();
-    const store = initStore(api, cart);
+    const api = new ExampleApi_Stub();
+    const cart = new CartApi_Stub();
+    const store = initStore(api as unknown as ExampleApi, cart as unknown as CartApi);
 
     const application = (
-        <BrowserRouter basename={basename}>
+        <MemoryRouter initialEntries={[route]}>
             <Provider store={store}>
                 <Application />
             </Provider>
-        </BrowserRouter>
+        </MemoryRouter>
     );
 
     return render(application);
@@ -47,10 +46,10 @@ describe('Проверка общих требований', () => {
         const links: string[] = [];
         linkEls.forEach(link => links.push(link.href));
 
-        expect(links.some(v => /\/store\/catalog$/.test(v))).toBeTruthy();
-        expect(links.some(v => /\/store\/delivery$/.test(v))).toBeTruthy();
-        expect(links.some(v => /\/store\/contacts$/.test(v))).toBeTruthy();
-        expect(links.some(v => /\/store\/cart$/.test(v))).toBeTruthy();
+        expect(links.some(v => /\/catalog$/.test(v))).toBeTruthy();
+        expect(links.some(v => /\/delivery$/.test(v))).toBeTruthy();
+        expect(links.some(v => /\/contacts$/.test(v))).toBeTruthy();
+        expect(links.some(v => /\/cart$/.test(v))).toBeTruthy();
     });
 
     it('Название магазина в шапке должно быть ссылкой на главную страницу', () =>
@@ -61,7 +60,7 @@ describe('Проверка общих требований', () => {
         expect(brand instanceof HTMLAnchorElement).toBeTruthy();
         if (!brand || !(brand instanceof HTMLAnchorElement)) return;
 
-        expect(/\/store\/$/.test(brand.href)).toBeTruthy();
+        expect(/\/$/.test(brand.href)).toBeTruthy();
     });
 
     it('На ширине меньше 576px навигационное меню должно скрываться за "гамбургер"', () =>
