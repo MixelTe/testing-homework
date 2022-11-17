@@ -32,10 +32,10 @@ function Render(route = "/")
 describe('Проверка общих требований', () => {
     it('Вёрстка должна адаптироваться под ширину экрана', () =>
     {
-        const { container } = Render();
-        expect("Знания").toBe("Достаточно для решения");
+        const { getByTestId } = Render();
+        expect(getByTestId("home-desc").classList).toContain("row");
     });
-    
+
     it('В шапке отображаются ссылки на страницы магазина, а также ссылка на корзину', () =>
     {
         const { container } = Render();
@@ -65,7 +65,25 @@ describe('Проверка общих требований', () => {
 
     it('На ширине меньше 576px навигационное меню должно скрываться за "гамбургер"', () =>
     {
-        const { container } = Render();
-        expect("Знания").toBe("Достаточно для решения");
+        const { getByTestId } = Render();
+        expect(getByTestId("navbar-toggler").classList).toContain("navbar-toggler");
+        expect(getByTestId("navbar").classList).toContain("navbar-collapse");
+    });
+
+    it('При выборе элемента из меню "гамбургера", меню должно закрываться', () =>
+    {
+        const { getByTestId } = Render();
+        const toggler = getByTestId("navbar-toggler");
+        const navbar = getByTestId("navbar");
+        const link = navbar.querySelector("a");
+
+        expect(link).toBeTruthy();
+        if (!link) return;
+
+        expect(navbar.classList).toContain("collapse");
+        toggler.click();
+        expect(navbar.classList).not.toContain("collapse");
+        link.click();
+        expect(navbar.classList).toContain("collapse");
     });
 });

@@ -19,7 +19,7 @@ export const Home: React.FC = () => {
                     </p>
                 </div>
             </div>
-            <div className="row mb-4">
+            <div data-testid="home-desc" className="row mb-4">
                 <div className="col-12 col-md-4 bg-light py-3">
                     <h1>Quickly</h1>
                     <p className="lead">
