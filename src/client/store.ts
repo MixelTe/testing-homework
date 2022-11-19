@@ -43,13 +43,13 @@ export type Action =
 
 // reducer
 
-function createRootReducer(state: Partial<ApplicationState>) {
+export function createRootReducer(state: Partial<ApplicationState>, stub = false) {
     const defaultState = { ...DEFAULT_STATE, ...state };
 
     const fn = (state: ApplicationState = defaultState, action: Action): ApplicationState => produce(state, draft => {
         switch (action.type) {
             case 'PRODUCTS_LOAD':
-                draft.products = undefined;
+                draft.products = stub ? state.products : undefined;
                 break;
             case 'PRODUCTS_LOADED':
                 draft.products = action.products;
@@ -136,16 +136,16 @@ export const rootEpic = combineEpics(
     productDetailsLoadEpic,
 );
 
-export function initStore(api: ExampleApi, cart: CartApi) {
+export function initStore(api: ExampleApi, cart: CartApi, state?: ApplicationState) {
     const rootReducer = createRootReducer({
         cart: cart.getState()
-    });
+    }, !!state);
 
     const epicMiddleware = createEpicMiddleware<Action, Action, ApplicationState, EpicDeps>({
         dependencies: { api, cart }
     });
 
-    const store = createStore(rootReducer, applyMiddleware(epicMiddleware));
+    const store = createStore(rootReducer, state, applyMiddleware(epicMiddleware));
 
     epicMiddleware.run(rootEpic);
 

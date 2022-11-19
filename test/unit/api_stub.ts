@@ -26,21 +26,13 @@ export const LOCAL_STORAGE_CART_KEY = 'example-store-cart';
 
 export class CartApi_Stub
 {
-    public state = "";
+    public state: CartState = {};
     getState(): CartState
     {
-        try
-        {
-            return JSON.parse(this.state) as CartState || {};
-        }
-        catch
-        {
-            return {};
-        }
+        return this.state;
     }
-
     setState(cart: CartState)
     {
-        this.state = JSON.stringify(cart);
+        this.state = cart;
     }
 }
