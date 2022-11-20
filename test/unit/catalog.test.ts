@@ -48,8 +48,37 @@ describe('На странице с подробной информацией о 
 	});
 });
 
+describe('Если товар уже добавлен в корзину', () => {
+	it('В каталоге должно отображаться сообщение об этом', () =>
+	{
+		const state = createState(true);
+		const { getByTestId } = Render("/catalog", state);
+		const items = getByTestId("catalog-items");
+		const item = within(items).getByTestId("1");
+		expect(item.innerHTML.includes("Item in cart")).toBeTruthy();
+	});
+	it('На странице товара должно отображаться сообщение об этом', () =>
+	{
+		const state = createState(true);
+		const { getByTestId } = Render("/catalog/1", state);
+		const content = getByTestId("pageContent");
+		expect(content.innerHTML.includes("Item in cart")).toBeTruthy();
+	});
+	it('Повторное нажатие кнопки "добавить в корзину" должно увеличивать его количество', () =>
+	{
+		const { store, getByTestId } = Render("/catalog/1", createState(true));
+		const content = getByTestId("pageContent");
+		console.log(content.innerHTML);
+		const btn = content.querySelector<HTMLButtonElement>(".ProductDetails-AddToCart");
+		expect(btn).toBeTruthy();
+		if (!btn) return;
 
-function createState(): ApplicationState
+		btn.click();
+		expect(store.getState().cart[1].count).toEqual(2);
+	});
+});
+
+function createState(inCart = false): ApplicationState
 {
 	const d: ApplicationState = {
 		cart: {},
@@ -81,6 +110,13 @@ function createState(): ApplicationState
 		},
 	}
 	d.products = Object.values(d.details);
+	if (inCart) d.cart = {
+		1: {
+			name: d.details[1].name,
+			price: d.details[1].price,
+			count: 1,
+		},
+	}
 	return d;
 }
 
@@ -88,10 +124,8 @@ function checkItem(item: HTMLElement, data: Product)
 {
 	const title = item.querySelector(".ProductItem-Name");
 	const price = item.querySelector(".ProductItem-Price");
-	const link = item.querySelector(".ProductItem-DetailsLink");
+	const link = item.querySelector<HTMLAnchorElement>(".ProductItem-DetailsLink");
 	expect(title?.innerHTML).toBe(data.name);
 	expect(price?.innerHTML).toBe(`$${data.price}`);
-	expect(link instanceof HTMLAnchorElement).toBeTruthy();
-	if (link instanceof HTMLAnchorElement)
-		expect(link.href.endsWith(`/catalog/${data.id}`)).toBeTruthy;
+	expect(link?.href?.endsWith(`/catalog/${data.id}`)).toBeTruthy();
 }

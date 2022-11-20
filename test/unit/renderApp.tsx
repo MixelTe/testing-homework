@@ -27,5 +27,5 @@ export function Render(route = "/", applicationState: ApplicationState = { cart:
         </MemoryRouter>
     );
 
-    return render(application);
+    return { store, ...render(application) };
 }
