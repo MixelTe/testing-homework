@@ -1,8 +1,7 @@
 import { within } from '@testing-library/react';
 import { it, describe, expect, test } from '@jest/globals';
-import { Render } from './renderApp';
+import { createState, Render } from './renderApp';
 import { Product } from '../../src/common/types';
-import { ApplicationState } from '../../src/client/store';
 
 
 describe('Проверка каталога', () => {
@@ -68,7 +67,6 @@ describe('Если товар уже добавлен в корзину', () => 
 	{
 		const { store, getByTestId } = Render("/catalog/1", createState(true));
 		const content = getByTestId("pageContent");
-		console.log(content.innerHTML);
 		const btn = content.querySelector<HTMLButtonElement>(".ProductDetails-AddToCart");
 		expect(btn).toBeTruthy();
 		if (!btn) return;
@@ -78,47 +76,6 @@ describe('Если товар уже добавлен в корзину', () => 
 	});
 });
 
-function createState(inCart = false): ApplicationState
-{
-	const d: ApplicationState = {
-		cart: {},
-		details: {
-			1: {
-				id: 1,
-				color: "red",
-				description: "Lorem ipsum",
-				material: "leather",
-				name: "The book",
-				price: 10,
-			},
-			2: {
-				id: 2,
-				color: "blue",
-				description: "Ipsum lorem",
-				material: "wood",
-				name: "table",
-				price: 253,
-			},
-			3: {
-				id: 3,
-				color: "green",
-				description: "Hendigr manus",
-				material: "stone",
-				name: "The Stone",
-				price: 9999,
-			},
-		},
-	}
-	d.products = Object.values(d.details);
-	if (inCart) d.cart = {
-		1: {
-			name: d.details[1].name,
-			price: d.details[1].price,
-			count: 1,
-		},
-	}
-	return d;
-}
 
 function checkItem(item: HTMLElement, data: Product)
 {

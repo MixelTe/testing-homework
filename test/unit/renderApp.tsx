@@ -29,3 +29,50 @@ export function Render(route = "/", applicationState: ApplicationState = { cart:
 
     return { store, ...render(application) };
 }
+
+export function createState(inCart = false): ApplicationState
+{
+	const d: ApplicationState = {
+		cart: {},
+		details: {
+			1: {
+				id: 1,
+				color: "red",
+				description: "Lorem ipsum",
+				material: "leather",
+				name: "The book",
+				price: 10,
+			},
+			2: {
+				id: 2,
+				color: "blue",
+				description: "Ipsum lorem",
+				material: "wood",
+				name: "table",
+				price: 253,
+			},
+			3: {
+				id: 3,
+				color: "green",
+				description: "Hendigr manus",
+				material: "stone",
+				name: "The Stone",
+				price: 9999,
+			},
+		},
+	}
+	d.products = Object.values(d.details);
+	if (inCart) d.cart = {
+		1: {
+			name: d.details[1].name,
+			price: d.details[1].price,
+			count: 1,
+		},
+		2: {
+			name: d.details[2].name,
+			price: d.details[2].price,
+			count: 1,
+		},
+	}
+	return d;
+}
