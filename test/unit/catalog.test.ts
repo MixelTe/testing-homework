@@ -1,5 +1,5 @@
 import { within } from '@testing-library/react';
-import { it, describe, expect } from '@jest/globals';
+import { it, describe, expect, test } from '@jest/globals';
 import { Render } from './renderApp';
 import { Product } from '../../src/common/types';
 import { ApplicationState } from '../../src/client/store';
@@ -18,6 +18,36 @@ describe('Проверка каталога', () => {
 		checkItem(item3, state.details[3]);
 	});
 });
+
+describe('На странице с подробной информацией о товаре отображаются элементы', () => {
+	test.each([
+		['Название', ".ProductDetails-Name", "name"],
+		['Описание', ".ProductDetails-Description", "description"],
+		['Цена', ".ProductDetails-Price", (d: Product) => `$${d.price}`],
+		['Цвет', ".ProductDetails-Color", "color"],
+		['Материал', ".ProductDetails-Material", "material"],
+	])("%s товара", (_: string, cls: string, dataField: keyof Product | ((v: Product) => string)) =>
+	{
+		const state = createState();
+		const i = 1;
+		const data = state.details[i];
+		const { getByTestId } = Render(`/catalog/${i}`, state);
+		const content = getByTestId("pageContent");
+
+		const title = content.querySelector(cls);
+		let expected = typeof dataField == "string" ? data[dataField] : dataField(data);
+		expect(title?.innerHTML).toBe(expected);
+	});
+	it('Кнопка "добавить в корзину"', () =>
+	{
+		const { getByTestId } = Render("/catalog/1", createState());
+		const content = getByTestId("pageContent");
+
+		const btn = content.querySelector(".ProductDetails-AddToCart");
+		expect(btn).toBeTruthy();
+	});
+});
+
 
 function createState(): ApplicationState
 {
