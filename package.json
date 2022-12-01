@@ -5,7 +5,7 @@
         "start": "nodemon ./src/server/index.ts",
         "test": "jest",
         "hermioneGui": ".\\node_modules\\.bin\\hermione gui -p 8080 .\\test\\hermione",
-        "hermione": ".\\node_modules\\.bin\\hermione .\\test\\hermione",
+        "hermione": "nodemon ./src/server/index.ts && .\\node_modules\\.bin\\hermione .\\test\\hermione",
         "build": "webpack --mode=production --node-env=production",
         "watch": "webpack --watch"
     },
